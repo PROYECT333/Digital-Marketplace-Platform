@@ -2,49 +2,72 @@
 
 ## 1. Objetivo
 
-Definir la estructura de la base de datos para soportar las operaciones principales del sistema Digital Marketplace Platform.
+Diseñar la estructura lógica y física de la base de datos que soportará las operaciones principales de la plataforma Digital Marketplace Platform.
 
-## 2. Entidades Principales
+## 2. Motor de Base de Datos
 
-### 2.1 Usuarios
+Se utilizará PostgreSQL como sistema gestor de base de datos debido a su recistencia, seguridad, escalabilidad y compatibilidad con aplicaciones empresariales.
+
+## 3. Entidades Principales
+
+### 3.1 Tabla: Usuarios
 
 | Campo | Tipo de Dato | Restricción |
-|-------------------------------------|
+|--------------------------------------------------------|
 | id_usuario | SERIAL | PRIMARY KEY |
-| nombre | VARCHAR(60) | NOT NULL |
-| correo | VARCHAR(80) | UNIQUE |
-| contraseña | VARCHAR(20) | NOT NULL |
+| nombre | VARCHAR(50) | NOT NULL |
+| apellido | VARCHAR(50) | NOT NULL |
+| correo | VARCHAR(100) | UNIQUE NOT NULL |
+| contraseña | VARCHAR(30) | NOT NULL |
 | rol | VARCHAR(30) | NOT NULL |
+| fecha_registro | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP |
 
-### 2.2 Productos
+### 3.2 Tabla: Productos
 
 | Campo | Tipo de Dato | Restricción |
-|------------------------------------|
+|-----------------------------------------------------------|
 | id_producto | SERIAL | PRIMARY KEY |
-| nombre | VARCHAR(100) | NOT NULL |
+| nombre | VARCHAR(50) | NOT NULL |
 | descripcion | TEXT | NOT NULL |
 | precio | DECIMAL(7,2) | NOT NULL |
 | stock | INT | NOT NULL |
+| id_vendedor | INT | FOREIGN KEY |
+| fecha_publicacion | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP |
 
-### 2.3 Pedidos
+### 3.3 Tabla: Pedidos
 
 | Campo | Tipo de Dato | Restricción |
-|------------------------------------|
+|------------------------------------------------------|
 | id_pedido | SERIAL | PRIMARY KEY |
 | id_usuario | INT | FOREIGN KEY |
-| fecha | TIMESTAMP | NOT NULL |
+| fecha_pedido | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP |
 | total | DECIMAL(8,2) | NOT NULL |
+| estado | VARCHAR(30) | NOT NULL |
 
-## 3. Relaciones
+### 3.4 Tabla: Detalle_Pedido
+
+| Campo | Tipo de Dato | Restricción |
+|-------------------------------------|
+| id_detalle | SERIAL | PRIMARY KEY |
+| id_pedido | INT | FOREIGN KEY |
+| id_producto | INT | FOREIGN KEY |
+| cantidad | INT | NOT NULL |
+| subtotal | DECIMAL(8,2) | NOT NULL |
+
+## 4. Relaciones
 
 - Un usuario puede realizar varios pedidos.
-- Un pedido puede incluir varios productos.
-- Un vendedor puede publicar múltiples productos.
+- Un vendedor puede publicar varios productos.
+- Un pedido puede contener múltiples productos.
+- La tabla detalle_pedido resuelve la relación entre pedidos y productos.
 
-## 4. Motor de Base de Datos
+## 5. Modelo Relacional
 
-Se utilizará PostgreSQL por su recistencia, escalabilidad y compatibilidad con aplicaciones empresariales.
+usuarios (1) ---- (N) pedidos  
+usuarios (1) ---- (N) productos  
+pedidos  (1) ---- (N) detalle_pedido  
+productos(1) ---- (N) detalle_pedido  
 
-## 5. Conclusión
+## 6. Conclusión
 
-El diseño propuesto permite almacenar y gestionar eficientemente la información crítica del sistema.
+El diseño garantiza integridad de datos, escalabilidad y una estructura sólida para el desarrollo del sistema.
